@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Enhanced Shots</title>
+    <style>
+      html, body { height: 100%; margin: 0; background: #231F20; }
+      body { display: grid; place-items: center; overflow: hidden; }
+      /* The site frames this page in an iframe, so the canvas fills it
+         rather than sitting at the fixed size Unity exports. */
+      #unity-canvas { width: 100%; height: 100%; display: block; background: #231F20; }
+      #loading {
+        position: fixed; inset: 0; display: grid; place-content: center;
+        gap: 10px; justify-items: center; background: #231F20; color: #c9c6c4;
+        font: 14px/1.5 ui-monospace, Consolas, monospace; text-align: center;
+      }
+      #loading[hidden] { display: none; }
+      #bar { width: min(320px, 60vw); height: 6px; accent-color: #9ad; }
+    </style>
+  </head>
+  <body>
+    <canvas id="unity-canvas" tabindex="0"></canvas>
+
+    <div id="loading">
+      <span id="loading-text"></span>
+      <progress id="bar" value="0" max="1"></progress>
+    </div>
+
+    <script src="Build/Bin.loader.js"></script>
+    <script>
+      // The embedding page passes ?lang=; a direct visitor gets their
+      // browser's language.
+      const STRINGS = {
+        en: { loading: 'loading…', failed: 'failed to load — see the console' },
+        pt: { loading: 'carregando…', failed: 'falha ao carregar — veja o console' },
+      };
+      const q = new URLSearchParams(location.search).get('lang');
+      const lang = STRINGS[q] ? q
+        : (navigator.language || 'en').toLowerCase().startsWith('pt') ? 'pt' : 'en';
+      document.documentElement.lang = lang === 'pt' ? 'pt-BR' : 'en';
+
+      const loading = document.getElementById('loading');
+      const loadingText = document.getElementById('loading-text');
+      const bar = document.getElementById('bar');
+      loadingText.textContent = STRINGS[lang].loading;
+
+      // Files are served uncompressed: GitHub Pages cannot send
+      // Content-Encoding, so the .gz variants Unity exports by default
+      // never decompress. See the repository README.
+      createUnityInstance(document.querySelector('#unity-canvas'), {
+        dataUrl: 'Build/Bin.data',
+        frameworkUrl: 'Build/Bin.framework.js',
+        codeUrl: 'Build/Bin.wasm',
+        streamingAssetsUrl: 'StreamingAssets',
+        companyName: 'WMDG',
+        productName: 'EnhancedShots',
+        productVersion: '0.1',
+      }, (progress) => { bar.value = progress; })
+        .then((instance) => {
+          loading.hidden = true;
+          document.querySelector('#unity-canvas').focus();
+        })
+        .catch((message) => {
+          loadingText.textContent = STRINGS[lang].failed;
+          bar.hidden = true;
+          console.error(message);
+        });
+    </script>
+  </body>
+</html>
