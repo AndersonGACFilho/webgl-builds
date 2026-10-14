@@ -27,7 +27,7 @@
       <progress id="bar" value="0" max="1"></progress>
     </div>
 
-    <script src="Build/WebGL.loader.js"></script>
+    <script src="Build/WebGL.loader.js?v=7070bb330bc3"></script>
     <script>
       // The embedding page passes ?lang=; a direct visitor gets their
       // browser's language.
@@ -49,9 +49,9 @@
       // Content-Encoding, so the .gz variants Unity exports by default
       // never decompress. See the repository README.
       createUnityInstance(document.querySelector('#unity-canvas'), {
-        dataUrl: 'Build/WebGL.data',
-        frameworkUrl: 'Build/WebGL.framework.js',
-        codeUrl: 'Build/WebGL.wasm',
+        dataUrl: 'Build/WebGL.data?v=7070bb330bc3',
+        frameworkUrl: 'Build/WebGL.framework.js?v=7070bb330bc3',
+        codeUrl: 'Build/WebGL.wasm?v=7070bb330bc3',
         streamingAssetsUrl: 'StreamingAssets',
         companyName: 'Vertex Shift',
         productName: 'The Invasion Reforged',
